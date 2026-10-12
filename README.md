@@ -1,6 +1,6 @@
 # Urmet 1067 for Home Assistant
 
-<img src="brands/urmet_1067/icon.png" width="96" alt="logo" align="right">
+<img src="custom_components/urmet_1067/brand/icon.png" width="96" alt="logo" align="right">
 
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz)
 
@@ -78,10 +78,10 @@ Reverse engineered from `spweco_3/js/main-build.js`; see the docstring in
   `ZONE` list) and isolation events; not used yet.
 
 ## Logo
-Home Assistant loads integration images from the central
-[brands](https://github.com/home-assistant/brands) repository, not from the
-component. The files in `brands/urmet_1067/` are prepared at the required sizes
-for a `custom_integrations/urmet_1067` pull request there.
+HACS reads the icon from `custom_components/urmet_1067/brand/`. The Home
+Assistant UI itself loads integration images from the central
+[brands](https://github.com/home-assistant/brands) repository; the same files
+can be submitted there as `custom_integrations/urmet_1067`.
 
 ## Development
 ```
