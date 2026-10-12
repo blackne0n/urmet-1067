@@ -1,0 +1,134 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connessione al WebServer Urmet 1067",
+        "data": {
+          "host": "Indirizzo IP",
+          "username": "Username",
+          "password": "Password",
+          "pin": "Codice utente della centrale (opzionale; se vuoto verrà richiesto ad ogni attivazione/disattivazione)",
+          "import_sensors": "Importa gli ingressi (un sensore aperto/chiuso per ogni ingresso)"
+        }
+      },
+      "zones": {
+        "title": "Raggruppamenti zone",
+        "description": "Scegli quali zone attivare con ciascuna modalità. Ogni zona ha inoltre la propria entità e il servizio arm_zones attiva qualsiasi combinazione.",
+        "data": {
+          "away_zones": "Zone per Attiva (fuori casa)",
+          "home_zones": "Zone per Attiva (casa)",
+          "night_zones": "Zone per Attiva (notte)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Connessione non riuscita",
+      "invalid_auth": "Username o password non validi",
+      "busy": "Un altro utente è connesso alla centrale (è ammessa una sola sessione). Chiudi l'app o il browser e riprova."
+    },
+    "abort": {
+      "already_configured": "Dispositivo già configurato"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Raggruppamenti zone",
+        "data": {
+          "away_zones": "Zone per Attiva (fuori casa)",
+          "home_zones": "Zone per Attiva (casa)",
+          "night_zones": "Zone per Attiva (notte)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "alarm_control_panel": {
+      "panel": {
+        "state_attributes": {
+          "active_zones": {
+            "name": "Zone attive"
+          },
+          "open_sensors": {
+            "name": "Ingressi aperti"
+          },
+          "isolated_sensors": {
+            "name": "Ingressi isolati"
+          },
+          "alarm_memory_sensors": {
+            "name": "Memoria allarmi"
+          },
+          "last_alarm": {
+            "name": "Ultimo allarme"
+          },
+          "failures": {
+            "name": "Anomalie"
+          },
+          "global_flags": {
+            "name": "Stato centrale"
+          }
+        }
+      },
+      "zone": {
+        "state_attributes": {
+          "active_zones": {
+            "name": "Zone attive"
+          },
+          "open_sensors": {
+            "name": "Ingressi aperti"
+          },
+          "isolated_sensors": {
+            "name": "Ingressi isolati"
+          },
+          "alarm_memory_sensors": {
+            "name": "Memoria allarmi"
+          },
+          "last_alarm": {
+            "name": "Ultimo allarme"
+          }
+        }
+      }
+    },
+    "binary_sensor": {
+      "input": {
+        "state_attributes": {
+          "isolated": {
+            "name": "Isolato"
+          },
+          "alarm_memory": {
+            "name": "Memoria allarme"
+          },
+          "zones": {
+            "name": "Zone"
+          }
+        }
+      }
+    },
+    "switch": {
+      "isolate": {
+        "name": "Isola {name}"
+      }
+    }
+  },
+  "services": {
+    "arm_zones": {
+      "name": "Attiva zone",
+      "description": "Attiva esattamente le zone indicate (ID zona come nelle opzioni dell'integrazione); le zone non elencate vengono disattivate. Una lista vuota disattiva tutto.",
+      "fields": {
+        "zones": {
+          "name": "Zone",
+          "description": "Elenco degli ID zona da tenere attive."
+        },
+        "code": {
+          "name": "Codice",
+          "description": "Codice utente della centrale, se non salvato in configurazione."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "unknown_zone": {
+      "message": "ID zona sconosciuti: {zones}"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+arm_zones:
+  target:
+    entity:
+      integration: urmet_1067
+      domain: alarm_control_panel
+  fields:
+    zones:
+      required: true
+      example: "[1, 3]"
+      selector:
+        object:
+    code:
+      required: false
+      example: "1234"
+      selector:
+        text:
+          type: password

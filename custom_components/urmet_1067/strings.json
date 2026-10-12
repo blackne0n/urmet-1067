@@ -1,0 +1,134 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to the Urmet 1067 web server",
+        "data": {
+          "host": "Host / IP address",
+          "username": "Web username",
+          "password": "Web password",
+          "pin": "Panel user code (optional; if empty you'll be asked for it on every arm/disarm)",
+          "import_sensors": "Import inputs (one open/closed sensor per panel input)"
+        }
+      },
+      "zones": {
+        "title": "Zone groupings",
+        "description": "Choose which zones each arm mode arms. Each zone also gets its own entity, and the arm_zones service arms any combination.",
+        "data": {
+          "away_zones": "Zones for Arm away",
+          "home_zones": "Zones for Arm home",
+          "night_zones": "Zones for Arm night"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid username or password",
+      "busy": "Another user is connected to the panel (it allows a single session). Close the app/browser and retry."
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Zone groupings",
+        "data": {
+          "away_zones": "Zones for Arm away",
+          "home_zones": "Zones for Arm home",
+          "night_zones": "Zones for Arm night"
+        }
+      }
+    }
+  },
+  "entity": {
+    "alarm_control_panel": {
+      "panel": {
+        "state_attributes": {
+          "active_zones": {
+            "name": "Active zones"
+          },
+          "open_sensors": {
+            "name": "Open inputs"
+          },
+          "isolated_sensors": {
+            "name": "Isolated inputs"
+          },
+          "alarm_memory_sensors": {
+            "name": "Alarm memory"
+          },
+          "last_alarm": {
+            "name": "Last alarm"
+          },
+          "failures": {
+            "name": "Faults"
+          },
+          "global_flags": {
+            "name": "Panel flags"
+          }
+        }
+      },
+      "zone": {
+        "state_attributes": {
+          "active_zones": {
+            "name": "Active zones"
+          },
+          "open_sensors": {
+            "name": "Open inputs"
+          },
+          "isolated_sensors": {
+            "name": "Isolated inputs"
+          },
+          "alarm_memory_sensors": {
+            "name": "Alarm memory"
+          },
+          "last_alarm": {
+            "name": "Last alarm"
+          }
+        }
+      }
+    },
+    "binary_sensor": {
+      "input": {
+        "state_attributes": {
+          "isolated": {
+            "name": "Isolated"
+          },
+          "alarm_memory": {
+            "name": "Alarm memory"
+          },
+          "zones": {
+            "name": "Zones"
+          }
+        }
+      }
+    },
+    "switch": {
+      "isolate": {
+        "name": "Isolate {name}"
+      }
+    }
+  },
+  "services": {
+    "arm_zones": {
+      "name": "Arm zones",
+      "description": "Arm exactly the given panel zones (zone ids as shown in the integration options); zones not listed are disarmed. An empty list disarms everything.",
+      "fields": {
+        "zones": {
+          "name": "Zones",
+          "description": "List of zone ids to keep armed."
+        },
+        "code": {
+          "name": "Code",
+          "description": "Panel user code, if not stored at setup."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "unknown_zone": {
+      "message": "Unknown zone id(s): {zones}"
+    }
+  }
+}

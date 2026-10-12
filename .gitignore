@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.playwright-mcp/
+.DS_Store
+.idea/
+.vscode/
+.playwright/
+.playwright-mcp/
+.ha-test/
