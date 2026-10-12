@@ -134,10 +134,14 @@ class Urmet1067Api:
             method, self._base + path, headers=self._headers, timeout=TIMEOUT, **kwargs
         ) as resp:
             if resp.status == 404:  # logout without a session answers 404
+                _LOGGER.debug("%s %s -> 404 (no session)", method, path)
                 return {"result": "NAK"}
             if "TRACKID" in resp.cookies:  # login rotates the session id
                 self._headers["Cookie"] = f"TRACKID={resp.cookies['TRACKID'].value}"
-            return await resp.json(content_type=None) or {}
+            body = await resp.json(content_type=None) or {}
+            # never log request payloads: login/access carry the password hash / PIN
+            _LOGGER.debug("%s %s -> %s %s", method, path, resp.status, body.get("result", body))
+            return body
 
     async def _get(self, path: str, tries: int = 1) -> dict:
         """GET; some endpoints (detailedstates) NAK for a few seconds after login."""
@@ -159,6 +163,7 @@ class Urmet1067Api:
             )
             if resp.get("result") != "ACK" or resp.get("data", {}).get("authlevel", -1) < 1:
                 raise UrmetBusy("login refused (bad credentials or another user connected)")
+            _LOGGER.debug("logged in, authlevel %s", resp["data"].get("authlevel"))
             try:
                 yield
             finally:
@@ -212,7 +217,9 @@ class Urmet1067Api:
         async with self._logged_in():
             resp = await self._post("/spweco/access.cgi", {"code": pin})
             if resp.get("result") != "ACK":
+                _LOGGER.warning("panel refused the user code: %s", resp.get("info") or resp)
                 raise UrmetAuthError(f"PIN refused: {resp.get('info')}")
+            _LOGGER.debug("user code accepted, authlevel %s", resp.get("data", {}).get("authlevel"))
             yield
 
     async def _read_state_until(self, done) -> dict:
@@ -220,16 +227,20 @@ class Urmet1067Api:
 
         ponytail: keep the request burst small; the web server hangs when hammered.
         """
-        for _ in range(READ_RETRIES):
+        for i in range(READ_RETRIES):
             await asyncio.sleep(READ_RETRY_DELAY)
             if done(await self._detailed()):
                 break
+            _LOGGER.debug("panel has not reported the change yet (%s/%s)", i + 1, READ_RETRIES)
+        else:
+            _LOGGER.warning("panel accepted the command but did not report the new state")
         return await self._read_state()
 
     async def async_isolate(self, sensor_id: int, isolate: bool) -> dict:
         """Isolate (exclude) or include one input; returns fresh state."""
         async with self._as_user(None):
             ep = "exclude" if isolate else "include"
+            _LOGGER.info("%s input %s", "isolating" if isolate else "including", sensor_id)
             _data(await self._post(f"/spweco/{ep}.cgi", {"sensor": [sensor_id]}), ep)
             return await self._read_state_until(
                 lambda d: bool(sensor_flags(d, sensor_id).get("X")) == isolate
@@ -241,6 +252,10 @@ class Urmet1067Api:
             active = set((await self._detailed()).get("activezone") or [])
             off = sorted(active - target)
             on = sorted(target - active)
+            _LOGGER.info(
+                "arm request: target zones %s, active %s -> activate %s, deactivate %s",
+                sorted(target), sorted(active), on, off,
+            )
             if off:
                 _data(await self._post("/spweco/deactivate.cgi", {"zone": off}), "deactivate")
             if on:

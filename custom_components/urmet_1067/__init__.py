@@ -47,11 +47,17 @@ class UrmetCoordinator(DataUpdateCoordinator[dict]):
             # (it does, briefly, under load). Keep the last state for a few polls.
             self._busy += 1
             if self.data and self._busy < MAX_BUSY_POLLS:
-                _LOGGER.debug("panel unavailable, keeping last state: %s", err)
+                _LOGGER.log(
+                    logging.INFO if self._busy == 1 else logging.DEBUG,
+                    "panel not reachable (%s), keeping last state (%s/%s)",
+                    err, self._busy, MAX_BUSY_POLLS,
+                )
                 return self.data
             raise UpdateFailed(err) from err
         except UrmetError as err:
             raise UpdateFailed(err) from err
+        if self._busy:
+            _LOGGER.info("panel reachable again after %s skipped polls", self._busy)
         self._busy = 0
         return self.track(data)
 

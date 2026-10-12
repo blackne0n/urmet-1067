@@ -52,6 +52,12 @@ for *Arm home* / *Arm night*.
 * Arming is sent as a delta against the live panel state, like the official
   UI: zones to activate and zones to deactivate.
 
+## Logging
+Commands (arm/disarm/isolate) and panel availability changes are logged at
+INFO; a refused user code at WARNING. *Enable debug logging* on the
+integration page adds one line per HTTP request (method, path, result) and the
+retry/sync details. Passwords and codes are never logged.
+
 ## Protocol notes
 Reverse engineered from `spweco_3/js/main-build.js`; see the docstring in
 `api.py`. Verified on hardware unless stated otherwise.
