@@ -1,12 +1,14 @@
 {
   "domain": "urmet_1067",
   "name": "Urmet 1067",
-  "codeowners": ["@blackne0n"],
+  "codeowners": [
+    "@blackne0n"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/blackne0n/urmet-1067",
   "integration_type": "hub",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/blackne0n/urmet-1067/issues",
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.2.0"
 }
