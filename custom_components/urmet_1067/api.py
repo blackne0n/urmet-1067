@@ -58,7 +58,9 @@ def parse_date(d: dict) -> datetime:
     return datetime(2000 + d["YR"], d["MT"], d["DAY"], d["HR"], d["MIN"], d["SEC"])
 
 
-def map_state(detailed: dict, away: set[int], home: set[int], night: set[int]) -> str:
+def map_state(
+    detailed: dict, away: set[int], home: set[int], night: set[int], vacation: set[int] = frozenset()
+) -> str:
     """Return the HA alarm state name derived from detailedstates."""
     active = set(detailed.get("activezone") or [])
     if not active:
@@ -69,6 +71,8 @@ def map_state(detailed: dict, away: set[int], home: set[int], night: set[int]) -
         return "armed_home"
     if night and active == night:
         return "armed_night"
+    if vacation and active == vacation:
+        return "armed_vacation"
     return "armed_custom_bypass"
 
 

@@ -12,6 +12,7 @@ CONF_MAC = "mac"
 CONF_AWAY_ZONES = "away_zones"  # [zone_id, ...], default all
 CONF_HOME_ZONES = "home_zones"
 CONF_NIGHT_ZONES = "night_zones"
+CONF_VACATION_ZONES = "vacation_zones"
 CONF_ZONE_PANELS = "zone_panels"  # one alarm entity per zone, default on
 
 # ponytail: the panel accepts ONE web session at a time; polling more often

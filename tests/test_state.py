@@ -27,6 +27,7 @@ def test_map_state():
     assert api.map_state({"activezone": [1]}, ALL, HOME, NIGHT) == "armed_night"
     assert api.map_state({"activezone": [3]}, ALL, HOME, NIGHT) == "armed_custom_bypass"
     assert api.map_state({"activezone": [1]}, ALL, set(), set()) == "armed_custom_bypass"
+    assert api.map_state({"activezone": [3]}, ALL, HOME, NIGHT, {3}) == "armed_vacation"
 
 
 def test_breakings():

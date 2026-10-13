@@ -28,6 +28,7 @@ from .const import (
     CONF_NIGHT_ZONES,
     CONF_PIN,
     CONF_SENSORS,
+    CONF_VACATION_ZONES,
     CONF_ZONE_PANELS,
     CONF_ZONES,
     DOMAIN,
@@ -115,7 +116,7 @@ class UrmetAlarmBase(CoordinatorEntity[UrmetCoordinator], AlarmControlPanelEntit
 
 
 class UrmetPanel(UrmetAlarmBase):
-    """Whole system: away = all zones, home/night = configured groupings."""
+    """Whole system: each arm mode arms its configured zone grouping."""
 
     _attr_translation_key = "panel"
 
@@ -126,16 +127,21 @@ class UrmetPanel(UrmetAlarmBase):
         self._away = set(entry.options.get(CONF_AWAY_ZONES) or self._zones)
         self._home = set(entry.options.get(CONF_HOME_ZONES, []))
         self._night = set(entry.options.get(CONF_NIGHT_ZONES, []))
+        self._vacation = set(entry.options.get(CONF_VACATION_ZONES, []))
         features = AlarmControlPanelEntityFeature.ARM_AWAY
         if self._home:
             features |= AlarmControlPanelEntityFeature.ARM_HOME
         if self._night:
             features |= AlarmControlPanelEntityFeature.ARM_NIGHT
+        if self._vacation:
+            features |= AlarmControlPanelEntityFeature.ARM_VACATION
         self._attr_supported_features = features
 
     @property
     def alarm_state(self) -> AlarmControlPanelState | None:
-        state = map_state(self.coordinator.data["detailed"], self._away, self._home, self._night)
+        state = map_state(
+            self.coordinator.data["detailed"], self._away, self._home, self._night, self._vacation
+        )
         if state != "disarmed" and self._triggered():
             return AlarmControlPanelState.TRIGGERED
         return AlarmControlPanelState(state)
@@ -167,6 +173,9 @@ class UrmetPanel(UrmetAlarmBase):
 
     async def async_alarm_arm_night(self, code: str | None = None) -> None:
         await self._set(self._night, code)
+
+    async def async_alarm_arm_vacation(self, code: str | None = None) -> None:
+        await self._set(self._vacation, code)
 
 
 class UrmetZone(UrmetAlarmBase):

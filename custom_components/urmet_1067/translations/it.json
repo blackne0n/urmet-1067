@@ -18,6 +18,7 @@
           "away_zones": "Zone per Attiva (fuori casa)",
           "home_zones": "Zone per Attiva (casa)",
           "night_zones": "Zone per Attiva (notte)",
+          "vacation_zones": "Zone per Attiva (vacanza)",
           "zone_panels": "Un'entità allarme per ogni zona"
         }
       },
@@ -50,6 +51,7 @@
           "away_zones": "Zone per Attiva (fuori casa)",
           "home_zones": "Zone per Attiva (casa)",
           "night_zones": "Zone per Attiva (notte)",
+          "vacation_zones": "Zone per Attiva (vacanza)",
           "zone_panels": "Un'entità allarme per ogni zona"
         }
       }
