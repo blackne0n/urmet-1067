@@ -9,34 +9,49 @@ Custom integration for Urmet 1067 alarm panels (tested on a 1067/052A with the
 interface. No cloud, no extra hardware beyond the panel's Ethernet/web module.
 
 ## What you get
-* **Alarm panel entity**: *Arm away* / *Arm home* / *Arm night* each arm a
-  zone grouping you pick at setup (away defaults to all zones; editable later
-  in the integration options).
-* **One alarm entity per zone**: arm / disarm a single zone. Any combination
-  that matches no preset shows on the main entity as `armed_custom_bypass`.
+* **Alarm panel entity** with *Arm away*, *Arm home*, *Arm night* and
+  *Arm vacation*, each arming its own zone grouping. Away defaults to all
+  zones; home, night and vacation only appear when they have zones. Any
+  combination that matches no grouping shows as `armed_custom_bypass`.
+* **One alarm entity per zone** (on by default, can be turned off): arm /
+  disarm a single zone.
 * **Service `urmet_1067.arm_zones`** on the main entity: arm exactly the listed
   zone ids in one call (zones not listed are disarmed), for automations/scenes.
-* **One binary sensor per input** (optional toggle at setup): open/closed, with
-  *isolated* (bypassed) and *alarm memory* attributes, plus an **Isolate switch**
-  per input (Urmet "Isola" / "Includi"; only created when the user code is
-  stored at setup). Inputs are grouped under their zone's device.
+* **One binary sensor per input** (optional): open/closed, with *isolated*
+  (bypassed) and *alarm memory* attributes, plus an **Isolate switch** per
+  input (Urmet "Isola" / "Includi"; only created when the user code is stored).
+  Inputs are grouped under their zone's device.
 * Device page shows the real model (e.g. 1067/052A), web server and firmware
   versions and the MAC address, all read from the panel.
-* The groupings for *Arm home* / *Arm night* are prefilled from the panel's
-  own named quick commands (e.g. a "Notte" command becomes *Arm night*).
 * Attributes on the panel: active zones, open inputs, isolated inputs, alarm
   memory, last alarm, faults.
 * English and Italian translations using the Urmet UI wording.
 
 ## Install
-**HACS**: add this repository as a custom repository (category *Integration*),
-install, restart Home Assistant.
+**HACS**: add this repository (https://github.com/blackne0n/urmet-1067) as a
+custom repository (category *Integration*), install, restart Home Assistant.
 **Manual**: copy `custom_components/urmet_1067` into `config/custom_components/`.
 
-Then *Settings → Devices & services → Add integration → Urmet 1067*:
-host, the web-server username/password (the same as the browser / My1067 app),
-optionally the panel user code (PIN) and the inputs toggle. Next, pick the zones
-for *Arm home* / *Arm night*.
+## Configuration
+*Settings → Devices & services → Add integration → Urmet 1067*:
+
+1. **Connection**: host, the web-server username/password (the same as the
+   browser / My1067 app), optionally the panel user code (PIN) and whether to
+   import the inputs.
+2. **Zone groupings**: the zones each arm mode arms, and whether to create one
+   alarm entity per zone. *Arm home* / *Arm night* are prefilled from the
+   panel's own named quick commands (a "Notte"/"Night" command becomes
+   *Arm night*, the first other named one *Arm home*); vacation starts empty.
+
+Both can be changed later from the integration page:
+
+* **⋮ → Reconfigure**: host, credentials, PIN, inputs toggle. The new settings
+  are checked against the panel before saving.
+* **Configure**: zone groupings and the per-zone entities toggle.
+
+Zone and input names are read from the panel only at setup; after renaming
+them on the panel, remove and re-add the integration. Turning the inputs off
+leaves their old entities behind as unavailable; delete them by hand.
 
 ## Behaviour and limits
 * The panel accepts **one web session at a time**. The integration logs in,
