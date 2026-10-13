@@ -17,7 +17,8 @@
         "data": {
           "away_zones": "Zone per Attiva (fuori casa)",
           "home_zones": "Zone per Attiva (casa)",
-          "night_zones": "Zone per Attiva (notte)"
+          "night_zones": "Zone per Attiva (notte)",
+          "zone_panels": "Un'entità allarme per ogni zona"
         }
       },
       "reconfigure": {
@@ -48,7 +49,8 @@
         "data": {
           "away_zones": "Zone per Attiva (fuori casa)",
           "home_zones": "Zone per Attiva (casa)",
-          "night_zones": "Zone per Attiva (notte)"
+          "night_zones": "Zone per Attiva (notte)",
+          "zone_panels": "Un'entità allarme per ogni zona"
         }
       }
     }

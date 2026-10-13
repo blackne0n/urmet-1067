@@ -15,7 +15,7 @@ from homeassistant.components.alarm_control_panel import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_validation as cv, entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback, async_get_current_platform
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -28,6 +28,7 @@ from .const import (
     CONF_NIGHT_ZONES,
     CONF_PIN,
     CONF_SENSORS,
+    CONF_ZONE_PANELS,
     CONF_ZONES,
     DOMAIN,
 )
@@ -39,7 +40,15 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: UrmetConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     entities: list[UrmetAlarmBase] = [UrmetPanel(entry)]
-    entities += [UrmetZone(entry, int(z)) for z in entry.data[CONF_ZONES]]
+    if entry.options.get(CONF_ZONE_PANELS, True):
+        entities += [UrmetZone(entry, int(z)) for z in entry.data[CONF_ZONES]]
+    else:  # drop zone entities left over from when the option was on
+        ent_reg = er.async_get(hass)
+        for z in entry.data[CONF_ZONES]:
+            if entity_id := ent_reg.async_get_entity_id(
+                "alarm_control_panel", DOMAIN, f"{entry.entry_id}_zone_{z}"
+            ):
+                ent_reg.async_remove(entity_id)
     async_add_entities(entities)
     async_get_current_platform().async_register_entity_service(
         SERVICE_ARM_ZONES,

@@ -17,7 +17,8 @@
         "data": {
           "away_zones": "Zones for Arm away",
           "home_zones": "Zones for Arm home",
-          "night_zones": "Zones for Arm night"
+          "night_zones": "Zones for Arm night",
+          "zone_panels": "One alarm entity per zone"
         }
       },
       "reconfigure": {
@@ -48,7 +49,8 @@
         "data": {
           "away_zones": "Zones for Arm away",
           "home_zones": "Zones for Arm home",
-          "night_zones": "Zones for Arm night"
+          "night_zones": "Zones for Arm night",
+          "zone_panels": "One alarm entity per zone"
         }
       }
     }

@@ -24,6 +24,7 @@ from .const import (
     CONF_NIGHT_ZONES,
     CONF_PIN,
     CONF_SENSORS,
+    CONF_ZONE_PANELS,
     CONF_ZONES,
     DOMAIN,
 )
@@ -53,6 +54,7 @@ def zones_schema(zones: dict[str, str], current: dict) -> vol.Schema:
             vol.Optional(
                 CONF_NIGHT_ZONES, default=[str(z) for z in current.get(CONF_NIGHT_ZONES, [])]
             ): cv.multi_select(zones),
+            vol.Optional(CONF_ZONE_PANELS, default=current.get(CONF_ZONE_PANELS, True)): bool,
         }
     )
 
@@ -73,6 +75,7 @@ def _to_ids(user_input: dict) -> dict:
         CONF_AWAY_ZONES: [int(z) for z in user_input.get(CONF_AWAY_ZONES, [])],
         CONF_HOME_ZONES: [int(z) for z in user_input.get(CONF_HOME_ZONES, [])],
         CONF_NIGHT_ZONES: [int(z) for z in user_input.get(CONF_NIGHT_ZONES, [])],
+        CONF_ZONE_PANELS: user_input.get(CONF_ZONE_PANELS, True),
     }
 
 
