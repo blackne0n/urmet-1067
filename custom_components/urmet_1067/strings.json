@@ -19,6 +19,16 @@
           "home_zones": "Zones for Arm home",
           "night_zones": "Zones for Arm night"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure the Urmet 1067 connection",
+        "data": {
+          "host": "Host / IP address",
+          "username": "Web username",
+          "password": "Web password",
+          "pin": "Panel user code (optional; if empty you'll be asked for it on every arm/disarm)",
+          "import_sensors": "Import inputs (one open/closed sensor per panel input)"
+        }
       }
     },
     "error": {
@@ -27,7 +37,8 @@
       "busy": "Another user is connected to the panel (it allows a single session). Close the app/browser and retry."
     },
     "abort": {
-      "already_configured": "Device is already configured"
+      "already_configured": "Device is already configured",
+      "reconfigure_successful": "Reconfiguration successful"
     }
   },
   "options": {

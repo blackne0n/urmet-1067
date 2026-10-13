@@ -13,6 +13,7 @@ from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType
 
 from .api import Urmet1067Api, UrmetBusy, UrmetError
 from .const import (
@@ -27,12 +28,13 @@ from .const import (
     DOMAIN,
 )
 
+PASSWORD = TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD))
 USER_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_USERNAME): str,
-        vol.Required(CONF_PASSWORD): str,
-        vol.Optional(CONF_PIN, default=""): str,
+        vol.Required(CONF_PASSWORD): PASSWORD,
+        vol.Optional(CONF_PIN, default=""): PASSWORD,
         vol.Optional(CONF_IMPORT_SENSORS, default=True): bool,
     }
 )
@@ -81,25 +83,29 @@ class UrmetConfigFlow(ConfigFlow, domain=DOMAIN):
         self._data: dict[str, Any] = {}
         self._presets: dict = {}
 
+    async def _async_validate(self, user_input: dict) -> tuple[dict, dict[str, str]]:
+        """Log in and read the panel structure; returns (setup info, errors)."""
+        api = Urmet1067Api(
+            async_get_clientsession(self.hass),
+            user_input[CONF_HOST],
+            user_input[CONF_USERNAME],
+            user_input[CONF_PASSWORD],
+        )
+        try:
+            return await api.async_get_setup_info(), {}
+        except UrmetBusy:
+            info = await api.async_sys_info()
+            return {}, {"base": "busy" if info.get("sesstate") == 1 else "invalid_auth"}
+        except (UrmetError, aiohttp.ClientError, asyncio.TimeoutError):
+            return {}, {"base": "cannot_connect"}
+
     async def async_step_user(self, user_input: dict | None = None) -> ConfigFlowResult:
         errors: dict[str, str] = {}
         if user_input is not None:
             await self.async_set_unique_id(user_input[CONF_HOST])
             self._abort_if_unique_id_configured()
-            api = Urmet1067Api(
-                async_get_clientsession(self.hass),
-                user_input[CONF_HOST],
-                user_input[CONF_USERNAME],
-                user_input[CONF_PASSWORD],
-            )
-            try:
-                info = await api.async_get_setup_info()
-            except UrmetBusy:
-                info = await api.async_sys_info()
-                errors["base"] = "busy" if info.get("sesstate") == 1 else "invalid_auth"
-            except (UrmetError, aiohttp.ClientError, asyncio.TimeoutError):
-                errors["base"] = "cannot_connect"
-            else:
+            info, errors = await self._async_validate(user_input)
+            if not errors:
                 structure = info["structure"]
                 self._data = dict(user_input)
                 self._data[CONF_MAC] = info["netinfo"].get("macadd") or ""
@@ -113,6 +119,26 @@ class UrmetConfigFlow(ConfigFlow, domain=DOMAIN):
                 ]
                 return await self.async_step_zones()
         return self.async_show_form(step_id="user", data_schema=USER_SCHEMA, errors=errors)
+
+    async def async_step_reconfigure(self, user_input: dict | None = None) -> ConfigFlowResult:
+        """Change host, credentials, PIN or input import after setup."""
+        entry = self._get_reconfigure_entry()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            if (other := self.hass.config_entries.async_entry_for_domain_unique_id(
+                DOMAIN, user_input[CONF_HOST]
+            )) and other.entry_id != entry.entry_id:
+                return self.async_abort(reason="already_configured")
+            _, errors = await self._async_validate(user_input)
+            if not errors:
+                return self.async_update_reload_and_abort(
+                    entry, unique_id=user_input[CONF_HOST], data_updates=user_input
+                )
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=self.add_suggested_values_to_schema(USER_SCHEMA, user_input or entry.data),
+            errors=errors,
+        )
 
     async def async_step_zones(self, user_input: dict | None = None) -> ConfigFlowResult:
         if user_input is not None:

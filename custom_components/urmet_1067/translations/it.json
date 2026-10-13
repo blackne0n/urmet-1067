@@ -19,6 +19,16 @@
           "home_zones": "Zone per Attiva (casa)",
           "night_zones": "Zone per Attiva (notte)"
         }
+      },
+      "reconfigure": {
+        "title": "Riconfigura la connessione Urmet 1067",
+        "data": {
+          "host": "Indirizzo IP",
+          "username": "Username",
+          "password": "Password",
+          "pin": "Codice utente della centrale (opzionale; se vuoto verrà richiesto ad ogni attivazione/disattivazione)",
+          "import_sensors": "Importa gli ingressi (un sensore aperto/chiuso per ogni ingresso)"
+        }
       }
     },
     "error": {
@@ -27,7 +37,8 @@
       "busy": "Un altro utente è connesso alla centrale (è ammessa una sola sessione). Chiudi l'app o il browser e riprova."
     },
     "abort": {
-      "already_configured": "Dispositivo già configurato"
+      "already_configured": "Dispositivo già configurato",
+      "reconfigure_successful": "Riconfigurazione completata"
     }
   },
   "options": {
